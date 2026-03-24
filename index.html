@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Docházka</title>
+  <meta name="description" content="Jednoduchá evidence pracovní docházky" />
+  <meta name="theme-color" content="#1D9E75" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Docházka" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f8f6; color: #1a1a1a; min-height: 100vh; }
+    .app { max-width: 860px; margin: 0 auto; padding: 1.25rem 1rem 4rem; }
+
+    .month-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+    .month-title { font-size: 20px; font-weight: 600; flex: 1; min-width: 140px; }
+    .nav-btn { background: #fff; border: 1px solid #e0e0d8; border-radius: 8px; padding: 7px 14px; cursor: pointer; font-size: 15px; color: #1a1a1a; }
+    .nav-btn:active { background: #f0f0ec; }
+    .export-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .exp-btn { background: #fff; border: 1px solid #e0e0d8; border-radius: 8px; padding: 7px 11px; cursor: pointer; font-size: 13px; color: #555; }
+    .exp-btn:active { background: #f0f0ec; }
+    .exp-btn.green { border-color: #1D9E75; color: #085041; background: #f0faf6; }
+    .exp-btn.purple { border-color: #534AB7; color: #3C3489; background: #f3f2fe; }
+    .exp-btn.coral  { border-color: #993C1D; color: #712B13; background: #fdf1ed; }
+
+    .backup-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; padding: 10px 14px; background: #EEEDFE; border-radius: 10px; }
+    .backup-label { font-size: 12px; color: #534AB7; }
+    .backup-label strong { color: #3C3489; }
+
+    .metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 1rem; }
+    @media(min-width:500px){ .metrics { grid-template-columns: repeat(4,1fr); } }
+    .metric { border-radius: 10px; padding: 12px 14px; }
+    .metric.teal   { background: #E1F5EE; }
+    .metric.blue   { background: #E6F1FB; }
+    .metric.amber  { background: #FAEEDA; }
+    .metric.purple { background: #EEEDFE; }
+    .metric-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+    .metric.teal   .metric-label { color: #0F6E56; }
+    .metric.blue   .metric-label { color: #185FA5; }
+    .metric.amber  .metric-label { color: #854F0B; }
+    .metric.purple .metric-label { color: #534AB7; }
+    .metric-val { font-size: 22px; font-weight: 700; line-height: 1; }
+    .metric.teal   .metric-val { color: #085041; }
+    .metric.blue   .metric-val { color: #0C447C; }
+    .metric.amber  .metric-val { color: #633806; }
+    .metric.purple .metric-val { color: #3C3489; }
+    .metric-sub { font-size: 11px; margin-top: 3px; }
+    .metric.teal   .metric-sub { color: #0F6E56; }
+    .metric.blue   .metric-sub { color: #185FA5; }
+    .metric.amber  .metric-sub { color: #854F0B; }
+    .metric.purple .metric-sub { color: #534AB7; }
+
+    .add-card { background: #fff; border: 1px solid #e0e0d8; border-radius: 14px; padding: 14px 16px; margin-bottom: 1rem; }
+    .add-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media(min-width:500px){ .add-grid { grid-template-columns: 1fr 1fr 1fr 1fr; } }
+    .field label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px; }
+    .field input { width: 100%; height: 42px; border: 1px solid #e0e0d8; border-radius: 8px; background: #f8f8f6; color: #1a1a1a; font-size: 15px; padding: 0 10px; font-family: 'Courier New', monospace; }
+    .field input:focus { outline: none; border-color: #1D9E75; background: #fff; }
+    .add-btn { width: 100%; margin-top: 10px; height: 44px; background: #1D9E75; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; letter-spacing: 0.02em; }
+    .add-btn:active { background: #0F6E56; }
+    .preview-bar { margin-top: 8px; min-height: 20px; font-size: 13px; color: #888; font-family: 'Courier New', monospace; }
+    .preview-badge { display: inline-block; background: #E1F5EE; color: #085041; border-radius: 99px; padding: 1px 10px; font-weight: 600; }
+
+    .table-card { background: #fff; border: 1px solid #e0e0d8; border-radius: 14px; overflow: hidden; }
+    .entry-row { border-bottom: 1px solid #f0f0ec; padding: 12px 14px; }
+    .entry-row:last-child { border-bottom: none; }
+    .entry-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .entry-date { font-size: 13px; font-weight: 600; min-width: 70px; }
+    .entry-day { font-size: 11px; color: #888; }
+    .badge-h { display: inline-block; background: #E6F1FB; color: #0C447C; border-radius: 99px; padding: 2px 10px; font-size: 13px; font-weight: 600; font-family: 'Courier New', monospace; margin-left: auto; }
+    .del { background: none; border: none; cursor: pointer; color: #ccc; padding: 3px 6px; border-radius: 4px; font-size: 16px; margin-left: 4px; }
+    .del:active { color: #A32D2D; background: #FCEBEB; }
+    .entry-fields { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+    .entry-field label { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 2px; }
+    .time-input { font-family: 'Courier New', monospace; font-size: 14px; width: 100%; height: 34px; border: 1px solid #e8e8e4; border-radius: 6px; background: #f8f8f6; color: #1a1a1a; padding: 0 6px; }
+    .time-input:focus { outline: none; border-color: #1D9E75; background: #fff; }
+    .brk-input { font-family: 'Courier New', monospace; font-size: 14px; width: 100%; height: 34px; border: 1px solid #e8e8e4; border-radius: 6px; background: #f8f8f6; color: #1a1a1a; padding: 0 6px; }
+    .brk-input:focus { outline: none; border-color: #EF9F27; background: #fff; }
+    .entry-note { font-size: 11px; color: #aaa; font-family: 'Courier New', monospace; margin-top: 5px; }
+    .empty-msg { text-align: center; padding: 2.5rem; color: #aaa; font-size: 14px; }
+
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #085041; color: #fff; border-radius: 99px; padding: 10px 22px; font-size: 14px; font-weight: 500; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999; white-space: nowrap; }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="toast" id="toast"></div>
+
+  <div class="month-bar">
+    <button class="nav-btn" onclick="changeMonth(-1)">&#8592;</button>
+    <span class="month-title" id="month-title"></span>
+    <button class="nav-btn" onclick="changeMonth(1)">&#8594;</button>
+    <div class="export-group">
+      <button class="exp-btn" onclick="exportCSV()">CSV</button>
+      <button class="exp-btn green" onclick="exportXLSX()">Excel</button>
+      <button class="exp-btn purple" onclick="backupAll()">&#8595; Záloha</button>
+      <button class="exp-btn coral" onclick="document.getElementById('imp').click()">&#8593; Obnovit</button>
+      <input type="file" id="imp" accept=".json" style="display:none" onchange="importBackup(event)" />
+    </div>
+  </div>
+
+  <div class="backup-bar" id="backup-bar" style="display:none">
+    <span class="backup-label" id="backup-label"></span>
+  </div>
+
+  <div class="metrics">
+    <div class="metric teal">
+      <div class="metric-label">Celkem hodin</div>
+      <div class="metric-val" id="m-gross">0 h</div>
+      <div class="metric-sub">příchod – odchod</div>
+    </div>
+    <div class="metric blue">
+      <div class="metric-label">Čistý čas</div>
+      <div class="metric-val" id="m-net">0:00</div>
+      <div class="metric-sub">bez přestávek</div>
+    </div>
+    <div class="metric amber">
+      <div class="metric-label">Přestávky</div>
+      <div class="metric-val" id="m-brk">0:00</div>
+      <div class="metric-sub">h:mm celkem</div>
+    </div>
+    <div class="metric purple">
+      <div class="metric-label">Dní</div>
+      <div class="metric-val" id="m-days">0</div>
+      <div class="metric-sub">záznamy</div>
+    </div>
+  </div>
+
+  <div class="add-card">
+    <div class="add-grid">
+      <div class="field"><label>Datum</label><input type="date" id="inp-date" /></div>
+      <div class="field"><label>Příchod</label><input type="time" id="inp-from" value="07:00" /></div>
+      <div class="field"><label>Odchod</label><input type="time" id="inp-to" value="16:00" /></div>
+      <div class="field"><label>Přestávka</label><input type="time" id="inp-break" value="00:30" /></div>
+    </div>
+    <button class="add-btn" onclick="addEntry()">+ Přidat záznam</button>
+    <div class="preview-bar" id="preview-bar"></div>
+  </div>
+
+  <div class="table-card" id="table-card">
+    <div class="empty-msg" id="empty-msg">Žádné záznamy pro tento měsíc.</div>
+    <div id="entries-list"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const MONTHS=['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
+const DAYS=['Ne','Po','Út','St','Čt','Pá','So'];
+const PREFIX='doc5_';
+let now=new Date(), curY=now.getFullYear(), curM=now.getMonth();
+
+function key(y,m){return PREFIX+y+'_'+m;}
+function load(){try{return JSON.parse(localStorage.getItem(key(curY,curM)))||[];}catch(e){return[];}}
+function save(e){localStorage.setItem(key(curY,curM),JSON.stringify(e));}
+function toMins(t){if(!t)return 0;const[h,m]=t.split(':').map(Number);return h*60+m;}
+function fmtT(t){const[h,m]=t.split(':');return h+':'+m;}
+function fmtMins(mins){return Math.floor(mins/60)+':'+String(mins%60).padStart(2,'0');}
+function minsToTime(mins){return String(Math.floor(mins/60)).padStart(2,'0')+':'+String(mins%60).padStart(2,'0');}
+function grossMins(e){return Math.max(0,toMins(e.to)-toMins(e.from));}
+function netMins(e){return Math.max(0,grossMins(e)-(e.brk||0));}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+function updatePreview(){
+  const f=document.getElementById('inp-from').value;
+  const t=document.getElementById('inp-to').value;
+  const b=document.getElementById('inp-break').value;
+  const bar=document.getElementById('preview-bar');
+  if(!f||!t){bar.innerHTML='';return;}
+  const gross=Math.max(0,toMins(t)-toMins(f));
+  const net=Math.max(0,gross-toMins(b||'00:00'));
+  if(gross<=0){bar.innerHTML='<span style="color:#c00">Neplatný rozsah</span>';return;}
+  bar.innerHTML=`${fmtT(f)} – ${fmtT(t)} → <span class="preview-badge">${Math.round(gross/60)} h hrubě</span> čistě ${fmtMins(net)}`;
+}
+
+function addEntry(){
+  const date=document.getElementById('inp-date').value;
+  const from=document.getElementById('inp-from').value;
+  const to=document.getElementById('inp-to').value;
+  const b=document.getElementById('inp-break').value;
+  if(!date||!from||!to){alert('Vyplňte datum, příchod a odchod.');return;}
+  if(toMins(from)>=toMins(to)){alert('Odchod musí být po příchodu.');return;}
+  const entries=load();
+  entries.push({date,from,to,brk:toMins(b||'00:00')});
+  save(entries);render();showToast('Záznam přidán');
+}
+
+function deleteEntry(i){
+  const e=load().sort((a,b)=>a.date.localeCompare(b.date));
+  e.splice(i,1);save(e);render();
+}
+
+function editField(i,field,val){
+  const e=load().sort((a,b)=>a.date.localeCompare(b.date));
+  if(field==='brk'){e[i].brk=toMins(val||'00:00');}
+  else{
+    e[i][field]=val;
+    if(toMins(e[i].from)>=toMins(e[i].to)){alert('Odchod musí být po příchodu.');render();return;}
+  }
+  save(e);render();
+}
+
+function render(){
+  document.getElementById('month-title').textContent=MONTHS[curM]+' '+curY;
+  const entries=load().sort((a,b)=>a.date.localeCompare(b.date));
+  const list=document.getElementById('entries-list');
+  const empty=document.getElementById('empty-msg');
+  if(!entries.length){
+    empty.style.display='block';list.innerHTML='';
+    document.getElementById('m-gross').textContent='0 h';
+    document.getElementById('m-net').textContent='0:00';
+    document.getElementById('m-brk').textContent='0:00';
+    document.getElementById('m-days').textContent='0';
+    return;
+  }
+  empty.style.display='none';
+  let tG=0,tN=0,tB=0;
+  list.innerHTML=entries.map((e,i)=>{
+    const g=grossMins(e),n=netMins(e);
+    tG+=g;tN+=n;tB+=(e.brk||0);
+    const d=new Date(e.date+'T00:00:00');
+    const brkStr=e.brk?` − ${fmtMins(e.brk)} přest.`:'';
+    return `<div class="entry-row">
+      <div class="entry-top">
+        <span class="entry-day">${DAYS[d.getDay()]}</span>
+        <span class="entry-date">${d.getDate()}.${d.getMonth()+1}.${d.getFullYear()}</span>
+        <span class="badge-h">${Math.round(g/60)} h</span>
+        <button class="del" onclick="deleteEntry(${i})">✕</button>
+      </div>
+      <div class="entry-fields">
+        <div class="entry-field"><label>Příchod</label><input class="time-input" type="time" value="${e.from}" onchange="editField(${i},'from',this.value)" /></div>
+        <div class="entry-field"><label>Odchod</label><input class="time-input" type="time" value="${e.to}" onchange="editField(${i},'to',this.value)" /></div>
+        <div class="entry-field"><label>Přestávka</label><input class="brk-input" type="time" value="${minsToTime(e.brk||0)}" onchange="editField(${i},'brk',this.value)" /></div>
+      </div>
+      <div class="entry-note">${fmtT(e.from)}–${fmtT(e.to)} = ${fmtMins(g)}${brkStr}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('m-gross').textContent=Math.round(tG/60)+' h';
+  document.getElementById('m-net').textContent=fmtMins(tN);
+  document.getElementById('m-brk').textContent=fmtMins(tB);
+  document.getElementById('m-days').textContent=entries.length;
+  updateBackupInfo();
+}
+
+function changeMonth(d){curM+=d;if(curM<0){curM=11;curY--;}if(curM>11){curM=0;curY++;}render();}
+
+function getRows(){
+  return load().sort((a,b)=>a.date.localeCompare(b.date)).map(r=>{
+    const d=new Date(r.date+'T00:00:00');
+    const g=grossMins(r);
+    return{Datum:r.date,Den:DAYS[d.getDay()],Příchod:fmtT(r.from),Odchod:fmtT(r.to),'Přestávka':fmtMins(r.brk||0),'Hodin hrubě':Math.round(g/60),'Čistě (h:mm)':fmtMins(netMins(r))};
+  });
+}
+
+function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();}
+
+function exportCSV(){
+  const rows=getRows();if(!rows.length){alert('Žádné záznamy.');return;}
+  const h=Object.keys(rows[0]);
+  dl(new Blob(['\uFEFF'+[h.join(','),...rows.map(r=>h.map(k=>r[k]).join(','))].join('\n')],{type:'text/csv;charset=utf-8;'}),`dochazka_${curY}_${curM+1}.csv`);
+  showToast('CSV staženo');
+}
+
+function exportXLSX(){
+  if(typeof XLSX==='undefined'){alert('Načítám, zkuste znovu.');return;}
+  const rows=getRows();if(!rows.length){alert('Žádné záznamy.');return;}
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.json_to_sheet(rows);
+  ws['!cols']=[{wch:12},{wch:6},{wch:9},{wch:9},{wch:12},{wch:14},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,ws,MONTHS[curM]+' '+curY);
+  XLSX.writeFile(wb,`dochazka_${curY}_${curM+1}.xlsx`);
+  showToast('Excel stažen');
+}
+
+function backupAll(){
+  const allData={};let count=0;
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k.startsWith(PREFIX)){try{const v=JSON.parse(localStorage.getItem(k));if(v&&v.length){allData[k]=v;count+=v.length;}}catch(e){}}
+  }
+  if(!Object.keys(allData).length){alert('Žádná data k zálohování.');return;}
+  dl(new Blob([JSON.stringify({meta:{version:1,exportDate:new Date().toISOString(),totalRecords:count},data:allData},null,2)],{type:'application/json'}),`dochazka_zaloha_${new Date().toISOString().slice(0,10)}.json`);
+  showToast(`Záloha stažena (${count} záznamů)`);
+}
+
+function importBackup(event){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const parsed=JSON.parse(e.target.result);
+      if(!parsed.data){alert('Neplatný soubor zálohy.');return;}
+      const keys=Object.keys(parsed.data);
+      const count=keys.reduce((s,k)=>s+(parsed.data[k].length||0),0);
+      if(!confirm(`Obnovit ${count} záznamů ze zálohy?\nStávající data budou zachována.`))return;
+      let added=0;
+      keys.forEach(k=>{
+        const existing=JSON.parse(localStorage.getItem(k)||'[]');
+        const merged=[...existing];
+        parsed.data[k].forEach(r=>{if(!merged.some(x=>x.date===r.date&&x.from===r.from&&x.to===r.to)){merged.push(r);added++;}});
+        localStorage.setItem(k,JSON.stringify(merged));
+      });
+      render();showToast(`Obnoveno: ${added} nových záznamů`);
+    }catch(err){alert('Chyba při načítání zálohy.');}
+  };
+  reader.readAsText(file);event.target.value='';
+}
+
+function updateBackupInfo(){
+  let total=0,months=0;
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k.startsWith(PREFIX)){try{const v=JSON.parse(localStorage.getItem(k));if(v&&v.length){total+=v.length;months++;}}catch(e){}}
+  }
+  const bar=document.getElementById('backup-bar');
+  const lbl=document.getElementById('backup-label');
+  if(total>0){bar.style.display='flex';lbl.innerHTML=`Uloženo: <strong>${total} záznamů</strong> v <strong>${months} měsících</strong>. Pro přenos použij tlačítko <strong>Záloha</strong>.`;}
+  else{bar.style.display='none';}
+}
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+
+['inp-from','inp-to','inp-break'].forEach(id=>document.getElementById(id).addEventListener('change',updatePreview));
+document.getElementById('inp-date').value=new Date().toISOString().slice(0,10);
+updatePreview();render();
+</script>
+</body>
+</html>
