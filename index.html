@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Docházka</title>
-  <meta name="description" content="Jednoduchá evidence pracovní docházky" />
   <meta name="theme-color" content="#1D9E75" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -15,19 +14,16 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f8f6; color: #1a1a1a; min-height: 100vh; }
     .app { max-width: 860px; margin: 0 auto; padding: 1.25rem 1rem 4rem; }
-
-    /* SYNC BAR */
     .sync-bar { display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #e0e0d8; border-radius: 12px; padding: 10px 14px; margin-bottom: 1rem; }
     .sync-status { flex: 1; font-size: 13px; }
     .sync-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; background: #ccc; vertical-align: middle; }
     .sync-dot.green { background: #1D9E75; }
-    .sync-dot.orange { background: #EF9F27; }
+    .sync-dot.orange { background: #EF9F27; animation: pulse 1s infinite; }
     .sync-dot.red { background: #E24B4A; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
     .sync-btn { background: none; border: 1px solid #e0e0d8; border-radius: 8px; padding: 5px 12px; cursor: pointer; font-size: 12px; color: #555; white-space: nowrap; }
     .sync-btn:active { background: #f0f0ec; }
     .sync-btn.setup { border-color: #1D9E75; color: #085041; background: #f0faf6; }
-
-    /* SETUP MODAL */
     .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem; }
     .modal { background: #fff; border-radius: 16px; padding: 24px; max-width: 420px; width: 100%; }
     .modal h2 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
@@ -39,7 +35,6 @@
     .modal-save { flex: 1; height: 42px; background: #1D9E75; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
     .modal-save:active { background: #0F6E56; }
     .modal-cancel { height: 42px; background: none; border: 1px solid #e0e0d8; border-radius: 10px; padding: 0 16px; font-size: 14px; cursor: pointer; color: #555; }
-
     .month-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
     .month-title { font-size: 20px; font-weight: 600; flex: 1; min-width: 140px; }
     .nav-btn { background: #fff; border: 1px solid #e0e0d8; border-radius: 8px; padding: 7px 14px; cursor: pointer; font-size: 15px; color: #1a1a1a; }
@@ -50,30 +45,20 @@
     .exp-btn.green { border-color: #1D9E75; color: #085041; background: #f0faf6; }
     .exp-btn.purple { border-color: #534AB7; color: #3C3489; background: #f3f2fe; }
     .exp-btn.coral  { border-color: #993C1D; color: #712B13; background: #fdf1ed; }
-
     .metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 1rem; }
     @media(min-width:500px){ .metrics { grid-template-columns: repeat(4,1fr); } }
     .metric { border-radius: 10px; padding: 12px 14px; }
-    .metric.teal   { background: #E1F5EE; }
-    .metric.blue   { background: #E6F1FB; }
-    .metric.amber  { background: #FAEEDA; }
-    .metric.purple { background: #EEEDFE; }
+    .metric.teal   { background: #E1F5EE; } .metric.blue { background: #E6F1FB; }
+    .metric.amber  { background: #FAEEDA; } .metric.purple { background: #EEEDFE; }
     .metric-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
-    .metric.teal   .metric-label { color: #0F6E56; }
-    .metric.blue   .metric-label { color: #185FA5; }
-    .metric.amber  .metric-label { color: #854F0B; }
-    .metric.purple .metric-label { color: #534AB7; }
+    .metric.teal .metric-label { color: #0F6E56; } .metric.blue .metric-label { color: #185FA5; }
+    .metric.amber .metric-label { color: #854F0B; } .metric.purple .metric-label { color: #534AB7; }
     .metric-val { font-size: 22px; font-weight: 700; line-height: 1; }
-    .metric.teal   .metric-val { color: #085041; }
-    .metric.blue   .metric-val { color: #0C447C; }
-    .metric.amber  .metric-val { color: #633806; }
-    .metric.purple .metric-val { color: #3C3489; }
+    .metric.teal .metric-val { color: #085041; } .metric.blue .metric-val { color: #0C447C; }
+    .metric.amber .metric-val { color: #633806; } .metric.purple .metric-val { color: #3C3489; }
     .metric-sub { font-size: 11px; margin-top: 3px; }
-    .metric.teal   .metric-sub { color: #0F6E56; }
-    .metric.blue   .metric-sub { color: #185FA5; }
-    .metric.amber  .metric-sub { color: #854F0B; }
-    .metric.purple .metric-sub { color: #534AB7; }
-
+    .metric.teal .metric-sub { color: #0F6E56; } .metric.blue .metric-sub { color: #185FA5; }
+    .metric.amber .metric-sub { color: #854F0B; } .metric.purple .metric-sub { color: #534AB7; }
     .add-card { background: #fff; border: 1px solid #e0e0d8; border-radius: 14px; padding: 14px 16px; margin-bottom: 1rem; }
     .add-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     @media(min-width:500px){ .add-grid { grid-template-columns: 1fr 1fr 1fr 1fr; } }
@@ -84,7 +69,6 @@
     .add-btn:active { background: #0F6E56; }
     .preview-bar { margin-top: 8px; min-height: 20px; font-size: 13px; color: #888; font-family: 'Courier New', monospace; }
     .preview-badge { display: inline-block; background: #E1F5EE; color: #085041; border-radius: 99px; padding: 1px 10px; font-weight: 600; }
-
     .table-card { background: #fff; border: 1px solid #e0e0d8; border-radius: 14px; overflow: hidden; }
     .entry-row { border-bottom: 1px solid #f0f0ec; padding: 12px 14px; }
     .entry-row:last-child { border-bottom: none; }
@@ -101,28 +85,23 @@
     .brk-input:focus { outline: none; border-color: #EF9F27; background: #fff; }
     .entry-note { font-size: 11px; color: #aaa; font-family: 'Courier New', monospace; margin-top: 5px; }
     .empty-msg { text-align: center; padding: 2.5rem; color: #aaa; font-size: 14px; }
-
     .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #085041; color: #fff; border-radius: 99px; padding: 10px 22px; font-size: 14px; font-weight: 500; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999; white-space: nowrap; }
     .toast.show { opacity: 1; }
-    .spinning { animation: spin 1s linear infinite; display: inline-block; }
-    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 <div class="app">
   <div class="toast" id="toast"></div>
 
-  <!-- SYNC BAR -->
   <div class="sync-bar">
     <span class="sync-status" id="sync-status">
       <span class="sync-dot" id="sync-dot"></span>
       <span id="sync-text">Načítám...</span>
     </span>
-    <button class="sync-btn" id="sync-now-btn" onclick="syncNow()" style="display:none">&#8635; Synchronizovat</button>
-    <button class="sync-btn setup" id="setup-btn" onclick="openSetup()">&#9881; Nastavení</button>
+    <button class="sync-btn" id="sync-now-btn" onclick="syncNow(true)" style="display:none">&#8635; Synchronizovat</button>
+    <button class="sync-btn setup" onclick="openSetup()">&#9881; Nastavení</button>
   </div>
 
-  <!-- SETUP MODAL -->
   <div class="modal-bg" id="modal" style="display:none">
     <div class="modal">
       <h2>Synchronizace přes GitHub</h2>
@@ -183,111 +162,125 @@ const MONTHS=['Leden','Únor','Březen','Duben','Květen','Červen','Červenec',
 const DAYS=['Ne','Po','Út','St','Čt','Pá','So'];
 const LS_PREFIX='doc5_';
 const GH_FILE='dochazka_data.json';
-let now=new Date(), curY=now.getFullYear(), curM=now.getMonth();
-let ghSha=null;
+let curY=new Date().getFullYear(), curM=new Date().getMonth();
 let syncTimeout=null;
+let isSyncing=false;
 
-// ── Config ──────────────────────────────────────────────
-function getCfg(){
-  try{return JSON.parse(localStorage.getItem('gh_cfg'))||{};}catch(e){return{};}
-}
+function getCfg(){try{return JSON.parse(localStorage.getItem('gh_cfg'))||{};}catch(e){return{};}}
 function hasCfg(){const c=getCfg();return !!(c.token&&c.user&&c.repo);}
-
-// ── Local storage ────────────────────────────────────────
 function lsKey(y,m){return LS_PREFIX+y+'_'+m;}
 function lsLoad(){try{return JSON.parse(localStorage.getItem(lsKey(curY,curM)))||[];}catch(e){return[];}}
 function lsSave(e){localStorage.setItem(lsKey(curY,curM),JSON.stringify(e));}
 
-// ── GitHub API ───────────────────────────────────────────
-async function ghGet(){
+// ── GitHub API — vždy nejdřív načte aktuální SHA ─────────
+async function ghGetRaw(){
   const {token,user,repo}=getCfg();
-  const url=`https://api.github.com/repos/${user}/${repo}/contents/${GH_FILE}`;
-  const res=await fetch(url,{headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json'}});
-  if(res.status===404){return null;}
-  if(!res.ok){throw new Error('GitHub chyba: '+res.status);}
+  const res=await fetch(`https://api.github.com/repos/${user}/${repo}/contents/${GH_FILE}`,
+    {headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Cache-Control':'no-cache'}});
+  if(res.status===404)return{data:null,sha:null};
+  if(!res.ok)throw new Error('GitHub HTTP '+res.status);
   const json=await res.json();
-  ghSha=json.sha;
-  return JSON.parse(atob(json.content.replace(/\n/g,'')));
+  const data=JSON.parse(atob(json.content.replace(/\n/g,'')));
+  return{data,sha:json.sha};
 }
 
-async function ghPut(allData){
+async function ghPut(allData,sha){
   const {token,user,repo}=getCfg();
-  const url=`https://api.github.com/repos/${user}/${repo}/contents/${GH_FILE}`;
   const content=btoa(unescape(encodeURIComponent(JSON.stringify(allData,null,2))));
-  const body={message:'Aktualizace docházky '+new Date().toISOString().slice(0,10),content};
-  if(ghSha)body.sha=ghSha;
-  const res=await fetch(url,{method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+  const body={message:'Docházka '+new Date().toISOString().slice(0,10),content};
+  if(sha)body.sha=sha;
+  const res=await fetch(`https://api.github.com/repos/${user}/${repo}/contents/${GH_FILE}`,
+    {method:'PUT',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(res.status===409){
+    // Conflict — načteme znovu a zkusíme znovu
+    throw new Error('CONFLICT');
+  }
   if(!res.ok){const e=await res.json();throw new Error(e.message||'GitHub chyba');}
   const json=await res.json();
-  ghSha=json.content.sha;
+  return json.content.sha;
 }
 
-// ── Merge all localStorage months into one object ────────
-function getAllLocalData(){
+function getAllLocal(){
   const all={};
   for(let i=0;i<localStorage.length;i++){
     const k=localStorage.key(i);
-    if(k.startsWith(LS_PREFIX)){
-      try{const v=JSON.parse(localStorage.getItem(k));if(v&&v.length)all[k]=v;}catch(e){}
-    }
+    if(k.startsWith(LS_PREFIX)){try{const v=JSON.parse(localStorage.getItem(k));if(v&&v.length)all[k]=v;}catch(e){}}
   }
   return all;
 }
 
-function applyRemoteData(remote){
-  if(!remote||!remote.data)return;
-  Object.keys(remote.data).forEach(k=>{
+function mergeData(remote,local){
+  const result={};
+  const keys=new Set([...Object.keys(remote||{}), ...Object.keys(local||{})]);
+  keys.forEach(k=>{
+    const r=remote&&remote[k]||[];
+    const l=local&&local[k]||[];
+    const merged=[...l];
+    r.forEach(x=>{if(!merged.some(y=>y.date===x.date&&y.from===x.from&&y.to===x.to))merged.push(x);});
+    if(merged.length)result[k]=merged;
+  });
+  return result;
+}
+
+function applyToLocal(data){
+  Object.keys(data).forEach(k=>{
     const existing=JSON.parse(localStorage.getItem(k)||'[]');
     const merged=[...existing];
-    remote.data[k].forEach(r=>{
-      if(!merged.some(x=>x.date===r.date&&x.from===r.from&&x.to===r.to))merged.push(r);
-    });
+    data[k].forEach(r=>{if(!merged.some(x=>x.date===r.date&&x.from===r.from&&x.to===r.to))merged.push(r);});
     localStorage.setItem(k,JSON.stringify(merged));
   });
 }
 
-// ── Sync ─────────────────────────────────────────────────
 function setSyncStatus(state,text){
-  const dot=document.getElementById('sync-dot');
-  const txt=document.getElementById('sync-text');
-  dot.className='sync-dot'+(state==='ok'?' green':state==='syncing'?' orange':state==='err'?' red':'');
-  txt.textContent=text;
+  document.getElementById('sync-dot').className='sync-dot'+(state==='ok'?' green':state==='busy'?' orange':state==='err'?' red':'');
+  document.getElementById('sync-text').textContent=text;
 }
 
-async function syncNow(){
+// ── Hlavní sync — vždy fetch → merge → push ──────────────
+async function syncNow(manual=false){
+  if(isSyncing)return;
   if(!hasCfg()){openSetup();return;}
-  setSyncStatus('syncing','Synchronizuji...');
-  try{
-    const remote=await ghGet();
-    if(remote)applyRemoteData(remote);
-    const localData=getAllLocalData();
-    const merged={meta:{version:1,lastSync:new Date().toISOString()},data:{}};
-    const allKeys=new Set([...Object.keys(remote&&remote.data||{}), ...Object.keys(localData)]);
-    allKeys.forEach(k=>{
-      const rem=(remote&&remote.data&&remote.data[k])||[];
-      const loc=localData[k]||[];
-      const combined=[...loc];
-      rem.forEach(r=>{if(!combined.some(x=>x.date===r.date&&x.from===r.from&&x.to===r.to))combined.push(r);});
-      if(combined.length)merged.data[k]=combined;
-      if(combined.length)localStorage.setItem(k,JSON.stringify(combined));
-    });
-    await ghPut(merged);
-    setSyncStatus('ok','Synchronizováno · '+new Date().toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'}));
-    render();
-  }catch(err){
-    setSyncStatus('err','Chyba synchronizace: '+err.message);
-    console.error(err);
+  isSyncing=true;
+  setSyncStatus('busy','Synchronizuji...');
+  let attempts=0;
+  while(attempts<3){
+    try{
+      // 1. Stáhni aktuální data + SHA z GitHubu
+      const {data:remote,sha}=await ghGetRaw();
+      // 2. Mergni s lokálními daty
+      const localData=getAllLocal();
+      const merged=mergeData(remote&&remote.data,localData);
+      // 3. Ulož mergnutá data lokálně
+      applyToLocal(merged);
+      // 4. Pushn na GitHub s aktuálním SHA
+      const newSha=await ghPut({meta:{version:1,lastSync:new Date().toISOString()},data:merged},sha);
+      setSyncStatus('ok','Synchronizováno · '+new Date().toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'}));
+      render();
+      isSyncing=false;
+      return;
+    }catch(err){
+      if(err.message==='CONFLICT'){
+        attempts++;
+        setSyncStatus('busy',`Conflict, zkouším znovu (${attempts}/3)...`);
+        await new Promise(r=>setTimeout(r,800));
+      } else {
+        setSyncStatus('err','Chyba: '+err.message);
+        isSyncing=false;
+        return;
+      }
+    }
   }
+  setSyncStatus('err','Synchronizace selhala, zkuste ručně.');
+  isSyncing=false;
 }
 
 function scheduleSave(){
   if(!hasCfg())return;
   clearTimeout(syncTimeout);
-  setSyncStatus('syncing','Ukládám...');
-  syncTimeout=setTimeout(syncNow,1500);
+  setSyncStatus('busy','Ukládám...');
+  syncTimeout=setTimeout(()=>syncNow(false),2000);
 }
 
-// ── Setup modal ──────────────────────────────────────────
 function openSetup(){
   const c=getCfg();
   document.getElementById('cfg-token').value=c.token||'';
@@ -305,10 +298,9 @@ async function saveSetup(){
   closeSetup();
   document.getElementById('sync-now-btn').style.display='';
   showToast('Nastavení uloženo, připojuji...');
-  await syncNow();
+  await syncNow(true);
 }
 
-// ── Utils ────────────────────────────────────────────────
 function toMins(t){if(!t)return 0;const[h,m]=t.split(':').map(Number);return h*60+m;}
 function fmtT(t){const[h,m]=t.split(':');return h+':'+m;}
 function fmtMins(m){return Math.floor(m/60)+':'+String(m%60).padStart(2,'0');}
@@ -323,22 +315,16 @@ function showToast(msg){
 }
 
 function updatePreview(){
-  const f=document.getElementById('inp-from').value;
-  const t=document.getElementById('inp-to').value;
-  const b=document.getElementById('inp-break').value;
+  const f=document.getElementById('inp-from').value,t=document.getElementById('inp-to').value,b=document.getElementById('inp-break').value;
   const bar=document.getElementById('preview-bar');
   if(!f||!t){bar.innerHTML='';return;}
-  const gross=Math.max(0,toMins(t)-toMins(f));
-  const net=Math.max(0,gross-toMins(b||'00:00'));
+  const gross=Math.max(0,toMins(t)-toMins(f)),net=Math.max(0,gross-toMins(b||'00:00'));
   if(gross<=0){bar.innerHTML='<span style="color:#c00">Neplatný rozsah</span>';return;}
   bar.innerHTML=`${fmtT(f)} – ${fmtT(t)} → <span class="preview-badge">${Math.round(gross/60)} h hrubě</span> čistě ${fmtMins(net)}`;
 }
 
 function addEntry(){
-  const date=document.getElementById('inp-date').value;
-  const from=document.getElementById('inp-from').value;
-  const to=document.getElementById('inp-to').value;
-  const b=document.getElementById('inp-break').value;
+  const date=document.getElementById('inp-date').value,from=document.getElementById('inp-from').value,to=document.getElementById('inp-to').value,b=document.getElementById('inp-break').value;
   if(!date||!from||!to){alert('Vyplňte datum, příchod a odchod.');return;}
   if(toMins(from)>=toMins(to)){alert('Odchod musí být po příchodu.');return;}
   const entries=lsLoad();
@@ -361,8 +347,7 @@ function editField(i,field,val){
 function render(){
   document.getElementById('month-title').textContent=MONTHS[curM]+' '+curY;
   const entries=lsLoad().sort((a,b)=>a.date.localeCompare(b.date));
-  const list=document.getElementById('entries-list');
-  const empty=document.getElementById('empty-msg');
+  const list=document.getElementById('entries-list'),empty=document.getElementById('empty-msg');
   if(!entries.length){
     empty.style.display='block';list.innerHTML='';
     ['m-gross','m-net','m-brk','m-days'].forEach(id=>document.getElementById(id).textContent=id==='m-days'?'0':id==='m-gross'?'0 h':'0:00');
@@ -371,10 +356,8 @@ function render(){
   empty.style.display='none';
   let tG=0,tN=0,tB=0;
   list.innerHTML=entries.map((e,i)=>{
-    const g=grossMins(e),n=netMins(e);
-    tG+=g;tN+=n;tB+=(e.brk||0);
-    const d=new Date(e.date+'T00:00:00');
-    const brkStr=e.brk?` − ${fmtMins(e.brk)} přest.`:'';
+    const g=grossMins(e),n=netMins(e);tG+=g;tN+=n;tB+=(e.brk||0);
+    const d=new Date(e.date+'T00:00:00'),brkStr=e.brk?` − ${fmtMins(e.brk)} přest.`:'';
     return `<div class="entry-row">
       <div class="entry-top">
         <span class="entry-day">${DAYS[d.getDay()]}</span>
@@ -417,14 +400,13 @@ function exportXLSX(){
   const wb=XLSX.utils.book_new(),ws=XLSX.utils.json_to_sheet(rows);
   ws['!cols']=[{wch:12},{wch:6},{wch:9},{wch:9},{wch:12},{wch:14},{wch:14}];
   XLSX.utils.book_append_sheet(wb,ws,MONTHS[curM]+' '+curY);
-  XLSX.writeFile(wb,`dochazka_${curY}_${curM+1}.xlsx`);
-  showToast('Excel stažen');
+  XLSX.writeFile(wb,`dochazka_${curY}_${curM+1}.xlsx`);showToast('Excel stažen');
 }
 function backupAll(){
-  const allData={};let count=0;
-  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith(LS_PREFIX)){try{const v=JSON.parse(localStorage.getItem(k));if(v&&v.length){allData[k]=v;count+=v.length;}}catch(e){}}}
-  if(!Object.keys(allData).length){alert('Žádná data k zálohování.');return;}
-  dl(new Blob([JSON.stringify({meta:{version:1,exportDate:new Date().toISOString(),totalRecords:count},data:allData},null,2)],{type:'application/json'}),`dochazka_zaloha_${new Date().toISOString().slice(0,10)}.json`);
+  const all={};let count=0;
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith(LS_PREFIX)){try{const v=JSON.parse(localStorage.getItem(k));if(v&&v.length){all[k]=v;count+=v.length;}}catch(e){}}}
+  if(!Object.keys(all).length){alert('Žádná data.');return;}
+  dl(new Blob([JSON.stringify({meta:{version:1,exportDate:new Date().toISOString()},data:all},null,2)],{type:'application/json'}),`dochazka_zaloha_${new Date().toISOString().slice(0,10)}.json`);
   showToast(`Záloha stažena (${count} záznamů)`);
 }
 function importBackup(event){
@@ -432,35 +414,30 @@ function importBackup(event){
   const reader=new FileReader();
   reader.onload=e=>{
     try{
-      const parsed=JSON.parse(e.target.result);
-      if(!parsed.data){alert('Neplatný soubor zálohy.');return;}
+      const parsed=JSON.parse(e.target.result);if(!parsed.data){alert('Neplatný soubor.');return;}
       const count=Object.values(parsed.data).reduce((s,v)=>s+v.length,0);
       if(!confirm(`Obnovit ${count} záznamů? Stávající data budou zachována.`))return;
       let added=0;
       Object.keys(parsed.data).forEach(k=>{
-        const existing=JSON.parse(localStorage.getItem(k)||'[]'),merged=[...existing];
-        parsed.data[k].forEach(r=>{if(!merged.some(x=>x.date===r.date&&x.from===r.from&&x.to===r.to)){merged.push(r);added++;}});
-        localStorage.setItem(k,JSON.stringify(merged));
+        const m=[...JSON.parse(localStorage.getItem(k)||'[]')];
+        parsed.data[k].forEach(r=>{if(!m.some(x=>x.date===r.date&&x.from===r.from&&x.to===r.to)){m.push(r);added++;}});
+        localStorage.setItem(k,JSON.stringify(m));
       });
-      render();scheduleSave();showToast(`Obnoveno: ${added} nových záznamů`);
+      render();scheduleSave();showToast(`Obnoveno: ${added} záznamů`);
     }catch(err){alert('Chyba při načítání zálohy.');}
   };
   reader.readAsText(file);event.target.value='';
 }
 
-// ── Init ─────────────────────────────────────────────────
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
-}
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 ['inp-from','inp-to','inp-break'].forEach(id=>document.getElementById(id).addEventListener('change',updatePreview));
 document.getElementById('inp-date').value=new Date().toISOString().slice(0,10);
 updatePreview();render();
 
 if(hasCfg()){
   document.getElementById('sync-now-btn').style.display='';
-  setSyncStatus('syncing','Načítám data z GitHubu...');
-  syncNow();
-} else {
+  syncNow(true);
+}else{
   setSyncStatus('','Synchronizace není nastavena');
   openSetup();
 }
